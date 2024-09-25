@@ -13,14 +13,14 @@ import java.io.File
 import java.io.FileOutputStream
 
 fun saveDrawing(
-    bitmap: Bitmap,
-    paths: List<Pair<Path, Color>>,
+    bitmap: Bitmap, //drawing will save on it,its like an image file
+    paths: List<Pair<Path, Color>>, //will contain the path and color used
     context: Context,
-    canvasWidth: Int,
-    canvasHeight: Int
+    canvasWidth: Int, //canvas width
+    canvasHeight: Int //canvas height
 ) {
     // Create an Android Canvas from the bitmap
-    val canvas = Canvas(bitmap)
+    val canvas = Canvas(bitmap) //canvas created so that our drawing can be drawn on the bitmap
 
     // Draw each path onto the Android Canvas
     for ((path, color) in paths) {
