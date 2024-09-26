@@ -1,5 +1,6 @@
 package com.example.drawingapp
 
+import MenuWithOptions
 import android.graphics.Bitmap
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -19,16 +20,16 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import MenuWithOptions
-import androidx.compose.ui.text.style.TextAlign
 
 @Composable
 fun DrawingApp() {
     val currentPath = remember { Path() }
     var lastPoint by remember { mutableStateOf<Offset?>(null) }
     val paths = remember { mutableStateListOf<Pair<Path, Color>>() }
+    val drawingHistory = remember { DrawingHistory() } // Initialize drawing history
 
     // Variables for stroke color and brush size
     var selectedColor by remember { mutableStateOf(Color.Black) }
@@ -40,10 +41,8 @@ fun DrawingApp() {
     var bitmap by remember { mutableStateOf<Bitmap?>(null) }
     val context = LocalContext.current
 
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        // Keep the MenuWithOptions above the canvas, ensuring separation
+    Column(modifier = Modifier.fillMaxSize()) {
+        // Menu for color and brush size selection
         MenuWithOptions(
             onColorSelected = { color -> selectedColor = color },
             onBrushSizeSelected = { brushSize -> selectedBrushSize = brushSize }
@@ -63,14 +62,15 @@ fun DrawingApp() {
                     modifier = Modifier.align(Alignment.Center) // Center the text inside the Box
                 )
             }
-
+            
             Canvas(
                 modifier = Modifier
                     .fillMaxSize()
                     .onSizeChanged { size ->
                         canvasWidth = size.width
                         canvasHeight = size.height
-                        bitmap = Bitmap.createBitmap(canvasWidth, canvasHeight, Bitmap.Config.ARGB_8888)
+                        bitmap =
+                            Bitmap.createBitmap(canvasWidth, canvasHeight, Bitmap.Config.ARGB_8888)
                     }
                     .pointerInput(Unit) {
                         detectDragGestures(
@@ -85,13 +85,18 @@ fun DrawingApp() {
                                 lastPoint = offset
                             },
                             onDragEnd = {
-                                paths.add(Pair(Path().apply { addPath(currentPath) }, selectedColor))
-                                currentPath.reset()
+                                // Add the current path to the paths list and the drawing history
+                                val newPath =
+                                    Pair(Path().apply { addPath(currentPath) }, selectedColor)
+                                paths.add(newPath)
+                                drawingHistory.addPath(newPath) // Add to drawing history
+                                currentPath.reset() // Reset the current path for the next drawing
                                 lastPoint = null
                             }
                         )
                     }
             ) {
+                // Draw all paths on the canvas
                 for ((path, color) in paths) {
                     drawPath(path, color, style = Stroke(width = selectedBrushSize))
                 }
@@ -105,9 +110,11 @@ fun DrawingApp() {
                     verticalArrangement = Arrangement.Bottom,
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
+                    // Clear screen button
                     Button(
                         onClick = {
                             paths.clear()
+                            drawingHistory.clearHistory() // Clear the drawing history
                             isPathDrawn = false
                             bitmap = Bitmap.createBitmap(canvasWidth, canvasHeight, Bitmap.Config.ARGB_8888)
                         },
@@ -117,6 +124,7 @@ fun DrawingApp() {
                         Text(text = "Clear Screen")
                     }
 
+                    // Download button
                     Button(
                         onClick = {
                             bitmap?.let {
@@ -127,6 +135,34 @@ fun DrawingApp() {
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
                     ) {
                         Text(text = "Download")
+                    }
+
+                    // Undo button
+                    Button(
+                        onClick = {
+                            // Undo: Restore the last path
+                            drawingHistory.undo()?.let { lastPath ->
+                                paths.removeAt(paths.size - 1) // Remove the last path from the paths list
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
+                    ) {
+                        Text(text = "Undo")
+                    }
+
+                    // Redo button
+                    Button(
+                        onClick = {
+                            // Redo: Restore the last undone path
+                            drawingHistory.redo()?.let { pathToRedo ->
+                                paths.add(pathToRedo) // Add the redone path back to the list
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
+                    ) {
+                        Text(text = "Redo")
                     }
                 }
             }
