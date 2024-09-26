@@ -15,9 +15,8 @@ import java.io.FileOutputStream
 fun saveDrawing(
     bitmap: Bitmap, //drawing will save on it,its like an image file
     paths: List<Pair<Path, Color>>, //will contain the path and color used
-    context: Context,
-    canvasWidth: Int, //canvas width
-    canvasHeight: Int //canvas height
+    context: Context
+    //canvas width
 ) {
     // Create an Android Canvas from the bitmap
     val canvas = Canvas(bitmap) //canvas created so that our drawing can be drawn on the bitmap

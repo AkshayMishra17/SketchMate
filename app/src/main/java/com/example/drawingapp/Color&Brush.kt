@@ -1,3 +1,5 @@
+package com.example.drawingapp
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -6,7 +8,6 @@ import androidx.compose.material3.Slider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -24,7 +25,7 @@ fun MenuWithOptions(
 ) {
     var expanded by remember { mutableStateOf(false) }
     var selectedColor by remember { mutableStateOf(Color.Black) }
-    var selectedBrushSize by remember { mutableStateOf(10f) }
+    var selectedBrushSize by remember { mutableFloatStateOf(10f) }
 
     // Menu with dropdown near button
     Box(modifier = Modifier.fillMaxWidth().padding(top = 50.dp), contentAlignment = Alignment.TopStart) {

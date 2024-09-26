@@ -1,6 +1,5 @@
 package com.example.drawingapp
 
-import MenuWithOptions
 import android.graphics.Bitmap
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -33,7 +32,7 @@ fun DrawingApp() {
 
     // Variables for stroke color and brush size
     var selectedColor by remember { mutableStateOf(Color.Black) }
-    var selectedBrushSize by remember { mutableStateOf(10f) }
+    var selectedBrushSize by remember { mutableFloatStateOf(10f) }
 
     var isPathDrawn by remember { mutableStateOf(false) }
     var canvasWidth by remember { mutableIntStateOf(0) }
@@ -128,7 +127,7 @@ fun DrawingApp() {
                     Button(
                         onClick = {
                             bitmap?.let {
-                                saveDrawing(it, paths, context, canvasWidth, canvasHeight)
+                                saveDrawing(it, paths, context)
                             }
                         },
                         modifier = Modifier.fillMaxWidth(),
@@ -141,7 +140,7 @@ fun DrawingApp() {
                     Button(
                         onClick = {
                             // Undo: Restore the last path
-                            drawingHistory.undo()?.let { lastPath ->
+                            drawingHistory.undo()?.let {
                                 paths.removeAt(paths.size - 1) // Remove the last path from the paths list
                             }
                         },
