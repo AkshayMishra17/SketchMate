@@ -4,9 +4,9 @@
 
 ## Features
 
-- ✏️ **Freehand Drawing**: Use your finger or styles to draw smoothly on the canvas.
+- ✏️ **Freehand Drawing**: Use your finger or stylus to draw smoothly on the canvas.
 - 🎨 **Customizable Brush**: Adjust the size, opacity, and color of your brush to match your style.
 - 🌈 **Color Picker**: Choose from a wide range of colors or create custom shades for a personalized touch.
 - 💾 **Download Your Drawing**: Easily save your artwork to your device with just one tap.
-
+- ↩️ **Undo and Redo**: Effortlessly revert or reapply your actions while drawing, giving you the flexibility to make changes without fear.
 
