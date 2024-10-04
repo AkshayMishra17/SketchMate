@@ -27,10 +27,9 @@ import androidx.compose.ui.unit.sp
 fun DrawingApp() {
     val currentPath = remember { Path() }
     var lastPoint by remember { mutableStateOf<Offset?>(null) }
-    val paths = remember { mutableStateListOf<Pair<Path, Color>>() }
-    val drawingHistory = remember { DrawingHistory() } // Initialize drawing history
+    val paths = remember { mutableStateListOf<Triple<Path, Color, Float>>() } // Changed to Triple
+    val drawingHistory = remember { DrawingHistory() } // Updated DrawingHistory class
 
-    // Variables for stroke color and brush size
     var selectedColor by remember { mutableStateOf(Color.Black) }
     var selectedBrushSize by remember { mutableFloatStateOf(10f) }
 
@@ -41,13 +40,11 @@ fun DrawingApp() {
     val context = LocalContext.current
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // Menu for color and brush size selection
         MenuWithOptions(
             onColorSelected = { color -> selectedColor = color },
             onBrushSizeSelected = { brushSize -> selectedBrushSize = brushSize }
         )
 
-        // Drawing canvas
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -58,10 +55,10 @@ fun DrawingApp() {
                     text = "Start Drawing",
                     style = TextStyle(fontSize = 30.sp, fontWeight = FontWeight.Bold),
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.align(Alignment.Center) // Center the text inside the Box
+                    modifier = Modifier.align(Alignment.Center)
                 )
             }
-            
+
             Canvas(
                 modifier = Modifier
                     .fillMaxSize()
@@ -84,20 +81,17 @@ fun DrawingApp() {
                                 lastPoint = offset
                             },
                             onDragEnd = {
-                                // Add the current path to the paths list and the drawing history
-                                val newPath =
-                                    Pair(Path().apply { addPath(currentPath) }, selectedColor)
+                                val newPath = Triple(Path().apply { addPath(currentPath) }, selectedColor, selectedBrushSize)
                                 paths.add(newPath)
-                                drawingHistory.addPath(newPath) // Add to drawing history
-                                currentPath.reset() // Reset the current path for the next drawing
+                                drawingHistory.addPath(newPath)
+                                currentPath.reset()
                                 lastPoint = null
                             }
                         )
                     }
             ) {
-                // Draw all paths on the canvas
-                for ((path, color) in paths) {
-                    drawPath(path, color, style = Stroke(width = selectedBrushSize))
+                for ((path, color, brushSize) in paths) {
+                    drawPath(path, color, style = Stroke(width = brushSize))
                 }
             }
 
@@ -109,11 +103,10 @@ fun DrawingApp() {
                     verticalArrangement = Arrangement.Bottom,
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    // Clear screen button
                     Button(
                         onClick = {
                             paths.clear()
-                            drawingHistory.clearHistory() // Clear the drawing history
+                            drawingHistory.clearHistory()
                             isPathDrawn = false
                             bitmap = Bitmap.createBitmap(canvasWidth, canvasHeight, Bitmap.Config.ARGB_8888)
                         },
@@ -123,7 +116,6 @@ fun DrawingApp() {
                         Text(text = "Clear Screen")
                     }
 
-                    // Download button
                     Button(
                         onClick = {
                             bitmap?.let {
@@ -136,12 +128,10 @@ fun DrawingApp() {
                         Text(text = "Download")
                     }
 
-                    // Undo button
                     Button(
                         onClick = {
-                            // Undo: Restore the last path
                             drawingHistory.undo()?.let {
-                                paths.removeAt(paths.size - 1) // Remove the last path from the paths list
+                                paths.removeAt(paths.size - 1)
                             }
                         },
                         modifier = Modifier.fillMaxWidth(),
@@ -150,12 +140,10 @@ fun DrawingApp() {
                         Text(text = "Undo")
                     }
 
-                    // Redo button
                     Button(
                         onClick = {
-                            // Redo: Restore the last undone path
                             drawingHistory.redo()?.let { pathToRedo ->
-                                paths.add(pathToRedo) // Add the redone path back to the list
+                                paths.add(pathToRedo)
                             }
                         },
                         modifier = Modifier.fillMaxWidth(),

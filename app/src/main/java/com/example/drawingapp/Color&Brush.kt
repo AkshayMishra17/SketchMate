@@ -1,5 +1,4 @@
 package com.example.drawingapp
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -14,9 +13,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+
+// Class to represent each stroke
+data class Stroke(
+    val path: Path,
+    val color: Color,
+    val brushSize: Float
+)
 
 @Composable
 fun MenuWithOptions(
@@ -28,7 +34,12 @@ fun MenuWithOptions(
     var selectedBrushSize by remember { mutableFloatStateOf(10f) }
 
     // Menu with dropdown near button
-    Box(modifier = Modifier.fillMaxWidth().padding(top = 50.dp), contentAlignment = Alignment.TopStart) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 50.dp),
+        contentAlignment = Alignment.TopStart
+    ) {
         // Menu icon inside a Box
         IconButton(onClick = { expanded = true }) {
             Icon(

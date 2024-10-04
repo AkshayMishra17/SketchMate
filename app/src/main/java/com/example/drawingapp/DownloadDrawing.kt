@@ -9,12 +9,13 @@ import androidx.compose.ui.graphics.asAndroidPath
 import androidx.compose.ui.graphics.toArgb
 import android.content.Context
 import android.graphics.Canvas
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import java.io.File
 import java.io.FileOutputStream
 
 fun saveDrawing(
     bitmap: Bitmap, //drawing will save on it,its like an image file
-    paths: List<Pair<Path, Color>>, //will contain the path and color used
+    paths: SnapshotStateList<Triple<Path, Color, Float>>, //will contain the path and color used
     context: Context
     //canvas width
 ) {
