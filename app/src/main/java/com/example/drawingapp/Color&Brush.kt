@@ -18,11 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 // Class to represent each stroke
-data class Stroke(
-    val path: Path,
-    val color: Color,
-    val brushSize: Float
-)
+
 
 @Composable
 fun MenuWithOptions(
