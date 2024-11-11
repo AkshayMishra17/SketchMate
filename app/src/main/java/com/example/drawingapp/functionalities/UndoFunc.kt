@@ -1,4 +1,4 @@
-package com.example.drawingapp
+package com.example.drawingapp.functionalities
 
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Color

@@ -1,4 +1,4 @@
-package com.example.drawingapp
+package com.example.drawingapp.functionalities
 
 import android.graphics.Bitmap
 import android.os.Environment

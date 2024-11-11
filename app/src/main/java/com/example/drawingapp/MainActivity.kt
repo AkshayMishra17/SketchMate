@@ -10,6 +10,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 
 import com.example.drawingapp.ui.theme.DrawingAppTheme
+import com.example.drawingapp.ui_layer.DrawingApp
 
 class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")

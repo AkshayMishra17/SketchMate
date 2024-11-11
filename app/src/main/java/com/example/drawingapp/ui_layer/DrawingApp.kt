@@ -1,4 +1,4 @@
-package com.example.drawingapp
+package com.example.drawingapp.ui_layer
 
 import android.graphics.Bitmap
 import androidx.compose.foundation.Canvas
@@ -22,6 +22,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.drawingapp.functionalities.DrawingHistory
+import com.example.drawingapp.functionalities.MenuWithOptions
+import com.example.drawingapp.functionalities.saveDrawing
 
 @Composable
 fun DrawingApp() {
