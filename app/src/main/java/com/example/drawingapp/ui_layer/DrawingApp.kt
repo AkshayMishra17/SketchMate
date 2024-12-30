@@ -10,9 +10,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
@@ -22,30 +21,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.drawingapp.functionalities.DrawingHistory
 import com.example.drawingapp.functionalities.MenuWithOptions
 import com.example.drawingapp.functionalities.saveDrawing
+import com.example.drawingapp.viewmodel.DrawingViewModel
 
 @Composable
 fun DrawingApp() {
-    val currentPath = remember { Path() }
-    var lastPoint by remember { mutableStateOf<Offset?>(null) }
-    val paths = remember { mutableStateListOf<Triple<Path, Color, Float>>() }
-    val drawingHistory = remember { DrawingHistory() }
-
-    var selectedColor by remember { mutableStateOf(Color.Black) }
-    var selectedBrushSize by remember { mutableFloatStateOf(10f) }
-
-    var isPathDrawn by remember { mutableStateOf(false) }
+    val viewModel: DrawingViewModel = viewModel()
+    val paths = viewModel.paths
+    val isPathDrawn by viewModel.isPathDrawn
     var canvasWidth by remember { mutableIntStateOf(0) }
     var canvasHeight by remember { mutableIntStateOf(0) }
-    var bitmap by remember { mutableStateOf<Bitmap?>(null) }
     val context = LocalContext.current
 
     Column(modifier = Modifier.fillMaxSize()) {
         MenuWithOptions(
-            onColorSelected = { color -> selectedColor = color },
-            onBrushSizeSelected = { brushSize -> selectedBrushSize = brushSize }
+            onColorSelected = { color -> viewModel.selectedColor.value = color },
+            onBrushSizeSelected = { brushSize -> viewModel.selectedBrushSize.value = brushSize }
         )
 
         Box(
@@ -68,33 +60,20 @@ fun DrawingApp() {
                     .onSizeChanged { size ->
                         canvasWidth = size.width
                         canvasHeight = size.height
-                        bitmap =
-                            Bitmap.createBitmap(canvasWidth, canvasHeight, Bitmap.Config.ARGB_8888)
+                        if (viewModel.canvasBitmap.value == null) {
+                            viewModel.canvasBitmap.value = Bitmap.createBitmap(canvasWidth, canvasHeight, Bitmap.Config.ARGB_8888)
+                        }
                     }
                     .pointerInput(Unit) {
                         detectDragGestures(
-                            onDragStart = { offset ->
-                                lastPoint = offset
-                                currentPath.moveTo(offset.x, offset.y)
-                                isPathDrawn = true
-                            },
-                            onDrag = { change, _ ->
-                                val offset = change.position
-                                currentPath.lineTo(offset.x, offset.y)
-                                lastPoint = offset
-                            },
-                            onDragEnd = {
-                                val newPath = Triple(Path().apply { addPath(currentPath) }, selectedColor, selectedBrushSize)
-                                paths.add(newPath)
-                                drawingHistory.addPath(newPath)
-                                currentPath.reset()
-                                lastPoint = null
-                            }
+                            onDragStart = { offset -> viewModel.startPath(offset) },
+                            onDrag = { change, _ -> viewModel.addPointToPath(change.position) },
+                            onDragEnd = { viewModel.finishPath() }
                         )
                     }
             ) {
-                for ((path, color, brushSize) in paths) {
-                    drawPath(path, color, style = Stroke(width = brushSize))
+                for (pathData in paths) {
+                    drawPath(pathData.path, pathData.color, style = Stroke(width = pathData.brushSize))
                 }
             }
 
@@ -107,12 +86,7 @@ fun DrawingApp() {
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Button(
-                        onClick = {
-                            paths.clear()
-                            drawingHistory.clearHistory()
-                            isPathDrawn = false
-                            bitmap = Bitmap.createBitmap(canvasWidth, canvasHeight, Bitmap.Config.ARGB_8888)
-                        },
+                        onClick = { viewModel.clearDrawing(canvasWidth, canvasHeight) },
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
                     ) {
@@ -121,8 +95,8 @@ fun DrawingApp() {
 
                     Button(
                         onClick = {
-                            bitmap?.let {
-                                saveDrawing(it, paths, context)
+                            viewModel.canvasBitmap.value?.let { bitmap ->
+                                saveDrawing(bitmap, paths, context)
                             }
                         },
                         modifier = Modifier.fillMaxWidth(),
@@ -132,11 +106,7 @@ fun DrawingApp() {
                     }
 
                     Button(
-                        onClick = {
-                            drawingHistory.undo()?.let {
-                                paths.removeAt(paths.size - 1)
-                            }
-                        },
+                        onClick = { viewModel.undo() },
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
                     ) {
@@ -144,11 +114,7 @@ fun DrawingApp() {
                     }
 
                     Button(
-                        onClick = {
-                            drawingHistory.redo()?.let { pathToRedo ->
-                                paths.add(pathToRedo)
-                            }
-                        },
+                        onClick = { viewModel.redo() },
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
                     ) {

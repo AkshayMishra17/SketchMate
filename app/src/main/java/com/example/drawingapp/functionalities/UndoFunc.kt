@@ -1,36 +1,35 @@
 package com.example.drawingapp.functionalities
 
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.Color
+
+import com.example.drawingapp.viewmodel.PathData
 
 class DrawingHistory {
-    private val undoStack = mutableListOf<Triple<Path, Color, Float>>() // Stack for undo, now using Triple
-    private val redoStack = mutableListOf<Triple<Path, Color, Float>>() // Stack for redo, now using Triple
+    private val undoStack = mutableListOf<PathData>()
+    private val redoStack = mutableListOf<PathData>()
 
-    fun addPath(path: Triple<Path, Color, Float>) {
-        undoStack.add(path)
-        redoStack.clear()
+    fun addPath(pathData: PathData) {
+        undoStack.add(pathData)
+        redoStack.clear() // Clear redo stack on new action
     }
 
-    fun undo(): Triple<Path, Color, Float>? {
+    fun undo(): PathData? {
         if (undoStack.isNotEmpty()) {
-            val lastPath = undoStack.removeAt(undoStack.size - 1)
-            redoStack.add(lastPath)
-            return lastPath
+            val pathData = undoStack.removeLast()
+            redoStack.add(pathData)
+            return pathData
         }
         return null
     }
 
-    fun redo(): Triple<Path, Color, Float>? {
+    fun redo(): PathData? {
         if (redoStack.isNotEmpty()) {
-            val pathToRedo = redoStack.removeAt(redoStack.size - 1)
-            undoStack.add(pathToRedo)
-            return pathToRedo
+            val pathData = redoStack.removeLast()
+            undoStack.add(pathData)
+            return pathData
         }
         return null
     }
 
-    // Clear all history
     fun clearHistory() {
         undoStack.clear()
         redoStack.clear()
