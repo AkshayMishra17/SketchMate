@@ -30,8 +30,8 @@ import com.example.drawingapp.functionalities.saveDrawing
 fun DrawingApp() {
     val currentPath = remember { Path() }
     var lastPoint by remember { mutableStateOf<Offset?>(null) }
-    val paths = remember { mutableStateListOf<Triple<Path, Color, Float>>() } // Changed to Triple
-    val drawingHistory = remember { DrawingHistory() } // Updated DrawingHistory class
+    val paths = remember { mutableStateListOf<Triple<Path, Color, Float>>() }
+    val drawingHistory = remember { DrawingHistory() }
 
     var selectedColor by remember { mutableStateOf(Color.Black) }
     var selectedBrushSize by remember { mutableFloatStateOf(10f) }

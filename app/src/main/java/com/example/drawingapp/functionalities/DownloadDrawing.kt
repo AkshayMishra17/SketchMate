@@ -19,7 +19,6 @@ fun saveDrawing(
     context: Context
     //canvas width
 ) {
-    // Create an Android Canvas from the bitmap
     val canvas = Canvas(bitmap) //canvas created so that our drawing can be drawn on the bitmap
 
     // Draw each path onto the Android Canvas
@@ -42,7 +41,5 @@ fun saveDrawing(
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
         out.flush()
     }
-
-    // Show success message to user
     Toast.makeText(context, "Drawing saved to gallery", Toast.LENGTH_LONG).show()
 }

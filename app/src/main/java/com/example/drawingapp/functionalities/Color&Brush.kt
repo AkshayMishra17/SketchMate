@@ -17,7 +17,6 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-// Class to represent each stroke
 
 
 @Composable
@@ -29,14 +28,14 @@ fun MenuWithOptions(
     var selectedColor by remember { mutableStateOf(Color.Black) }
     var selectedBrushSize by remember { mutableFloatStateOf(10f) }
 
-    // Menu with dropdown near button
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 50.dp),
         contentAlignment = Alignment.TopStart
     ) {
-        // Menu icon inside a Box
+
         IconButton(onClick = { expanded = true }) {
             Icon(
                 imageVector = Icons.Default.Menu,
@@ -45,13 +44,12 @@ fun MenuWithOptions(
             )
         }
 
-        // Dropdown menu with color and brush size options
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            modifier = Modifier.background(Color.Unspecified) // Ensure the background color is visible
+            modifier = Modifier.background(Color.Unspecified)
         ) {
-            // Color options
+
             Text("Choose Color", fontSize = 16.sp, modifier = Modifier.padding(8.dp))
             Row(
                 modifier = Modifier.padding(8.dp),
@@ -72,7 +70,6 @@ fun MenuWithOptions(
                 }
             }
 
-            // Brush size options
             Text("Brush Size", fontSize = 16.sp, modifier = Modifier.padding(8.dp))
             Slider(
                 value = selectedBrushSize,
@@ -83,7 +80,6 @@ fun MenuWithOptions(
 
             Text("Selected Brush Size: ${selectedBrushSize.toInt()}", fontSize = 14.sp, modifier = Modifier.padding(8.dp))
 
-            // Update the selected brush size
             onBrushSizeSelected(selectedBrushSize)
         }
     }
