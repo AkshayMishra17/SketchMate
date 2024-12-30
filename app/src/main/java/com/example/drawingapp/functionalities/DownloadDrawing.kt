@@ -3,19 +3,18 @@ package com.example.drawingapp.functionalities
 import android.graphics.Bitmap
 import android.os.Environment
 import android.widget.Toast
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.asAndroidPath
 import androidx.compose.ui.graphics.toArgb
 import android.content.Context
 import android.graphics.Canvas
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import com.example.drawingapp.viewmodel.PathData
 import java.io.File
 import java.io.FileOutputStream
 
 fun saveDrawing(
     bitmap: Bitmap, //drawing will save on it,its like an image file
-    paths: SnapshotStateList<Triple<Path, Color, Float>>, //will contain the path and color used
+    paths: SnapshotStateList<PathData>, //will contain the path and color used
     context: Context
     //canvas width
 ) {
